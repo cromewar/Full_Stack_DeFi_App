@@ -1,16 +1,17 @@
 //SPDX-License-Identifier: MIT
 
-// This contract shoulld be able to:
-// stakeTokens
-// unStakeTokens
-// issueTokens
-// addAllowedTokens
-// getEthValue
+// This contract shoulld - be able to:
+// stakeTokens - DONE
+// TODO: unStakeTokens
+// issueTokens - DONE
+// TODO: addAllowedTokens
+// getEthValue - DONE
 
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract TokenFarm is Ownable {
     //mapping token address -> staker address -> amount
@@ -19,15 +20,111 @@ contract TokenFarm is Ownable {
     //mapping address -> uint256
     mapping(address => uint256) public uniqueTokensStaked;
 
+    //mapping for the pricefeed address
+    mapping(address => address) public tokenPriceFeedMapping;
+
     //Array for the allowed token addresses
     address[] public allowedTokens;
 
     //Array for all the stakers
     address[] public stakers;
 
+    // Dapp token for rewards
+    IERC20 public dappToken;
+
+    // constructor / dapptoken address
+
+    constructor(address _dappTokenAddress) {
+        dappToken = IERC20(_dappTokenAddress);
+    }
+
+    // assign the address of the token to the addrres of the priceFeed
+    function setPriceFeedContract(address _token, address _priceFeed)
+        public
+        onlyOwner
+    {
+        tokenPriceFeedMapping[_token] = _priceFeed;
+    }
+
     // reward the user fot stake them tokens
     function issueTokens() public onlyOwner {
         // needs a list of all the stakers
+        for (
+            uint256 stakersIndex = 0;
+            stakersIndex < stakers.length;
+            stakersIndex++
+        ) {
+            address recipient = stakers[stakersIndex];
+            uint256 userTotalValue = getUserTotalValue(recipient);
+            // send them a toke reward
+            // dappToken.transfer(recipient, amount);
+            // based on their total value locked
+            dappToken.transfer(recipient, userTotalValue);
+        }
+    }
+
+    // get user total value
+
+    function getUserTotalValue(address _user) public view returns (uint256) {
+        uint256 totalValue = 0;
+        // make sure the user has staked tokens
+        require(uniqueTokensStaked[_user] > 0, "No tokens staked!");
+        // loop through the allowed tokens and define how much the user has of each one.
+        for (
+            uint256 allowedTokensIndex = 0;
+            allowedTokensIndex < allowedTokens.length;
+            allowedTokensIndex++
+        ) {
+            // add the total value the amount of the user has
+            totalValue =
+                totalValue +
+                getUserSingleTokenValue(
+                    _user,
+                    allowedTokens[allowedTokensIndex]
+                );
+        }
+        return totalValue;
+    }
+
+    function getUserSingleTokenValue(address _user, address _token)
+        public
+        view
+        returns (uint256)
+    {
+        // if staked 1 ETH and the price is 2000, make sure it returns 2000
+        // if staked DAI and the price is 200, make usre it returns 200
+
+        // If the user has not staked the current coin it returns zero
+        if (uniqueTokensStaked[_user] <= 0) {
+            return 0;
+        }
+
+        // get the price of the single token and multiply by the stakingBalance[_token][user]
+        (uint256 price, uint256 decimals) = getTokenValue(_token);
+        // returns the balance of the token based on the latest priceFeed
+        // 1000000000000000000 ETH
+        // example 100000000 ETH
+        // ETH/USD -> 100
+        // 10 * 100 = 1000
+        return ((stakingBalance[_token][_user] * price) / 10**decimals);
+    }
+
+    function getTokenValue(address _token)
+        public
+        view
+        returns (uint256, uint256)
+    {
+        //using chainlnk priceFeeds
+        //map each token with its associated price feed address.
+        // use aggregator v3 interface
+        address priceFeedAddress = tokenPriceFeedMapping[_token];
+        AggregatorV3Interface priceFeed = AggregatorV3Interface(
+            priceFeedAddress
+        );
+        // Get the latest price and it's decimals
+        (, int256 price, , , ) = priceFeed.latestRoundData();
+        uint256 decimals = uint256(priceFeed.decimals());
+        return (uint256(price), decimals);
     }
 
     function stakeTokens(uint256 _amount, address _token) public {
