@@ -2,9 +2,9 @@
 
 // This contract shoulld - be able to:
 // stakeTokens - DONE
-// TODO: unStakeTokens
+// unStakeTokens - DONE
 // issueTokens - DONE
-// TODO: addAllowedTokens
+// addAllowedTokens - DONE
 // getEthValue - DONE
 
 pragma solidity ^0.8.0;
@@ -152,6 +152,15 @@ contract TokenFarm is Ownable {
         if (uniqueTokensStaked[msg.sender] == 1) {
             stakers.push(msg.sender);
         }
+    }
+
+    function unstakeTokens(address _token) public {
+        // Fetch the staking balance of the user
+        uint256 balance = stakingBalance[_token][msg.sender];
+        require(balance > 0, "Staking balance cannot be zero");
+        IERC20(_token).transfer(msg.sender, balance);
+        stakingBalance[_token][msg.sender] = 0;
+        uniqueTokensStaked[msg.sender] = uniqueTokensStaked[msg.sender] - 1;
     }
 
     function updateUniqueTokensStaked(address _user, address _token) internal {
