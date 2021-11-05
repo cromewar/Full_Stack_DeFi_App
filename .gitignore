@@ -4,3 +4,5 @@ __pycache__
 .hypothesis/
 build/
 reports/
+front_end/node_modules/
+node_modules/

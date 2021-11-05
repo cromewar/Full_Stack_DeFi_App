@@ -3,10 +3,13 @@ from scripts.helpful_scripts import get_account, get_contract
 
 from web3 import Web3
 
+import yaml
+import json
+
 KEPT_BALANCE = Web3.toWei(10, "ether")
 
 
-def deploy_token_farm_and_dapp_token():
+def deploy_token_farm_and_dapp_token(update_front_end=False):
     account = get_account()
     dapp_token = DappToken.deploy({"from": account})
     token_farm = TokenFarm.deploy(
@@ -32,6 +35,9 @@ def deploy_token_farm_and_dapp_token():
     }
 
     add_allowed_tokens(token_farm, dict_of_allowed_tokens, account)
+
+    if update_front_end:
+        update_frontend()
     return token_farm, dapp_token
 
 
@@ -46,5 +52,15 @@ def add_allowed_tokens(token_farm, dict_of_allowed_tokens, account):
     return token_farm
 
 
+def update_frontend():
+    # send brownie-config config to frontend 'src'
+    # send the build folder
+    with open("brownie-config.yaml", "r") as brownie_config:
+        config_dict = yaml.load(brownie_config, Loader=yaml.FullLoader)
+        with open("./front_end/src/brownie-config.json", "w") as brownie_config_json:
+            json.dump(config_dict, brownie_config_json)
+    print("Front end updated!")
+
+
 def main():
-    deploy_token_farm_and_dapp_token()
+    deploy_token_farm_and_dapp_token(update_front_end=True)

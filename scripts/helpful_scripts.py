@@ -9,6 +9,8 @@ from brownie import (
 )
 from web3 import Web3
 
+INITIAL_PRICE_FEED_VALUE = 2000000000000000000000
+
 NON_FORKED_LOCAL_BLOCKCHAIN_ENVIRONMENTS = ["hardhat", "development", "ganache"]
 LOCAL_BLOCKCHAIN_ENVIRONMENTS = NON_FORKED_LOCAL_BLOCKCHAIN_ENVIRONMENTS + [
     "mainnet-fork",
