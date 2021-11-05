@@ -15,9 +15,11 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract TokenFarm is Ownable {
     //mapping token address -> staker address -> amount
+    // maps the how much tokens the user has based on the token address and the user address
     mapping(address => mapping(address => uint256)) public stakingBalance;
 
     //mapping address -> uint256
+    //maps how much different tokens the user has
     mapping(address => uint256) public uniqueTokensStaked;
 
     //mapping for the pricefeed address
