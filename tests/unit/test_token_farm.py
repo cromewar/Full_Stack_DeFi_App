@@ -16,7 +16,7 @@ def test_set_price_feed_contract():
 
     account = get_account()
     non_owner = get_account(index=1)
-    token_farm, dapp_token = deploy_token_farm_and_dapp_token()
+    token_farm, dapp_token = deploy_token_farm_and_dapp_token(update_front_end=False)
     price_feed_address = get_contract("eth_usd_price_feed")
     # Act
     token_farm.setPriceFeedContract(
@@ -36,7 +36,7 @@ def test_stake_tokens(amount_staked):
     if network.show_active() not in LOCAL_BLOCKCHAIN_ENVIRONMENTS:
         pytest.skip("Only for local testing")
     account = get_account()
-    token_farm, dapp_token = deploy_token_farm_and_dapp_token()
+    token_farm, dapp_token = deploy_token_farm_and_dapp_token(update_front_end=False)
     # Act
     dapp_token.approve(token_farm.address, amount_staked, {"from": account})
     token_farm.stakeTokens(amount_staked, dapp_token.address, {"from": account})
