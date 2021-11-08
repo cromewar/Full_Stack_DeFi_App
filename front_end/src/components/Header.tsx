@@ -30,11 +30,11 @@ export const Header = () => {
         <Box component="div"
             sx={sx.container}>
             {isConnected ? (
-                <Button onClick={deactivate} variant="outlined">
+                <Button onClick={deactivate} variant="outlined" color="secondary">
                     Disconnect
                 </Button>
             ) : (
-                <Button onClick={() => activateBrowserWallet()} variant="contained">
+                <Button onClick={() => activateBrowserWallet()} variant="contained" color="secondary">
                     Connect
                 </Button>
             )}

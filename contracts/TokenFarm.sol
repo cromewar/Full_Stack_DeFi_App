@@ -108,7 +108,7 @@ contract TokenFarm is Ownable {
         // example 100000000 ETH
         // ETH/USD -> 100
         // 10 * 100 = 1000
-        return ((stakingBalance[_token][_user] * price) / 10**decimals);
+        return ((stakingBalance[_token][_user] * price) / 100**decimals);
     }
 
     function getTokenValue(address _token)
