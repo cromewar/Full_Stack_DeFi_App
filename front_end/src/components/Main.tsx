@@ -7,6 +7,7 @@ import dapp from "../img/dapp.png"
 import eth from "../img/eth.png"
 import dai from "../img/dai.png"
 import { YourWallet } from "./yourWallet/"
+import { Box } from '@mui/material'
 
 
 export type Token = {
@@ -16,7 +17,10 @@ export type Token = {
 }
 
 
+
 export const Main = () => {
+
+
     // Show the token values from the wallet
 
     // Get the address of different tokens
@@ -51,5 +55,17 @@ export const Main = () => {
     ]
 
 
-    return (<YourWallet supportedTokens={supportedTokens} />)
+    return (
+        <Box>
+
+            <Box component="div" sx={{
+                color: "white",
+                textAlign: "center",
+                padding: 4
+            }}>
+                <h2> Dapp Token App</h2>
+            </Box>
+            <YourWallet supportedTokens={supportedTokens} />
+        </Box>
+    )
 }

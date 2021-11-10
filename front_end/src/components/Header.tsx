@@ -14,6 +14,10 @@ export const Header = () => {
             justifyContent: "flex-end",
             padding: 4,
             gap: 1
+        },
+        butt: {
+            color: "white",
+            border: "1px solid white"
         }
 
     }
@@ -30,7 +34,7 @@ export const Header = () => {
         <Box component="div"
             sx={sx.container}>
             {isConnected ? (
-                <Button onClick={deactivate} variant="outlined" color="secondary">
+                <Button onClick={deactivate} variant="outlined" color="secondary" sx={sx.butt}>
                     Disconnect
                 </Button>
             ) : (
